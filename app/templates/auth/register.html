@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}Create account | seatly{% endblock %}
+{% block content %}
+<section class="auth">
+  <form class="ticket auth-form" method="post" novalidate>
+    <div class="ticket-main">
+      {{ form.hidden_tag() }}
+      <span class="tag">Admit one</span>
+      <h2>Create your account</h2>
+      <p class="caption">Book tickets for events, or host your own.</p>
+      {{ field(form.email, 'email') }}
+      {{ field(form.password, 'new-password') }}
+      {{ field(form.confirm, 'new-password') }}
+      {{ field(form.role) }}
+      {{ form.submit(class="btn btn-fill") }}
+      <p class="switch">Already registered? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+    </div>
+    <div class="stub" aria-hidden="true"><div class="barcode"></div><small>No. 0002</small></div>
+  </form>
+</section>
+{% endblock %}

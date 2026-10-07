@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | seatly{% endblock %}
+{% block content %}
+<section class="page-head">
+  <h1>Organizer dashboard</h1>
+  <a class="btn btn-fill" href="{{ url_for('events.new') }}">Create event</a>
+</section>
+
+<div class="stack">
+  <section class="strip" aria-label="Summary">
+    <div><strong>{{ "₹{:,.0f}".format(kpi.revenue) }}</strong><span>Revenue from confirmed bookings</span></div>
+    <div><strong>{{ kpi.tickets }}</strong><span>Tickets sold</span></div>
+    <div><strong>{{ kpi.cancelled }}</strong><span>Cancelled bookings</span></div>
+  </section>
+
+  <section class="panel">
+    <h2>Tickets sold, last 14 days</h2>
+    <div class="chart-box"><canvas id="daily"></canvas></div>
+  </section>
+
+  <section class="panel">
+    <h2>Events ranked by revenue</h2>
+    {% if events %}
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Rank</th><th>Event</th><th>When</th><th class="num">Sold</th><th>Fill</th><th class="num">Revenue</th><th class="num">Share</th></tr>
+        </thead>
+        <tbody>
+          {% for r in events %}
+          <tr>
+            <td>#{{ r.revenue_rank }}</td>
+            <td><a href="{{ url_for('events.detail', event_id=r.id) }}">{{ r.title }}</a></td>
+            <td>{{ r.starts_at|event_dt }}</td>
+            <td class="num">{{ r.sold }} / {{ r.capacity }}</td>
+            <td><div class="seats mini" role="img" aria-label="{{ r.fill_pct|int }} percent full"><span style="--w:{{ r.fill_pct|int }}%"></span></div></td>
+            <td class="num">{{ "₹{:,.0f}".format(r.revenue) }}</td>
+            <td class="num">{{ r.share_pct|int }}%</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="caption">Revenue counts confirmed bookings only. Events with the same revenue share a rank.</p>
+    {% else %}
+    <p>No events yet. Create one and your numbers will show up here.</p>
+    {% endif %}
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const data = {{ chart|tojson }};
+Chart.defaults.font.family = 'Onest, sans-serif';
+Chart.defaults.color = '#4a6159';
+Chart.defaults.maintainAspectRatio = false;
+new Chart(document.getElementById('daily'), {
+  type: 'bar',
+  data: { labels: data.labels,
+          datasets: [{ data: data.values, backgroundColor: '#ff4b3e',
+                       borderColor: '#0f2a22', borderWidth: 2, borderRadius: 6 }] },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, ticks: { precision: 0 } },
+      x: { grid: { display: false }, ticks: { maxTicksLimit: 7 } }
+    }
+  }
+});
+</script>
+{% endblock %}

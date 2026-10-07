@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% from "_event_card.html" import event_card %}
+{% block title %}Events | seatly{% endblock %}
+{% block description %}Browse upcoming events, filter by price and availability, and book your seats.{% endblock %}
+{% block content %}
+{% set base_args = {'q': q or None,
+                    'sort': (sort if sort != 'soonest' else None),
+                    'available': ('1' if only_available else None)} %}
+<section class="page-head">
+  <h1>Upcoming events</h1>
+</section>
+
+<form class="filters" method="get" action="{{ url_for('events.list_events') }}">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search by title or venue" aria-label="Search events">
+  <select name="sort" aria-label="Sort events">
+    <option value="soonest" {{ 'selected' if sort == 'soonest' }}>Soonest first</option>
+    <option value="price_low" {{ 'selected' if sort == 'price_low' }}>Price: low to high</option>
+    <option value="price_high" {{ 'selected' if sort == 'price_high' }}>Price: high to low</option>
+  </select>
+  <label class="check"><input type="checkbox" name="available" value="1" {{ 'checked' if only_available }}> Hide sold out</label>
+  <button class="btn btn-fill" type="submit">Apply</button>
+</form>
+
+{% if events.items %}
+<p class="caption count">{{ events.total }} event{{ '' if events.total == 1 else 's' }} found</p>
+<section class="event-grid">
+  {% for event in events.items %}{{ event_card(event) }}{% endfor %}
+</section>
+
+{% if events.pages > 1 %}
+<nav class="pager" aria-label="Pages">
+  {% if events.has_prev %}<a class="btn btn-sm" href="{{ url_for('events.list_events', page=events.prev_num, **base_args) }}">Previous</a>{% endif %}
+  <span>Page {{ events.page }} of {{ events.pages }}</span>
+  {% if events.has_next %}<a class="btn btn-sm" href="{{ url_for('events.list_events', page=events.next_num, **base_args) }}">Next</a>{% endif %}
+</nav>
+{% endif %}
+
+{% else %}
+<section class="panel empty-note">
+  {% if q or only_available %}
+    <h2>No events match your filters.</h2>
+    <p>Try a different word, or clear the filters.</p>
+    <div class="hero-actions"><a class="btn" href="{{ url_for('events.list_events') }}">Clear filters</a></div>
+  {% else %}
+    <h2>No upcoming events yet.</h2>
+    <p>Check back soon, or create one if you are an organizer.</p>
+  {% endif %}
+</section>
+{% endif %}
+{% endblock %}

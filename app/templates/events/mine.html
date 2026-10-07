@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}My events | seatly{% endblock %}
+{% block content %}
+<section class="page-head">
+  <h1>My events</h1>
+  <a class="btn btn-fill" href="{{ url_for('events.new') }}">Create event</a>
+</section>
+
+{% if events %}
+<section class="panel">
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>Event</th><th>When</th><th>Booked</th><th>Price</th><th></th></tr></thead>
+      <tbody>
+        {% for e in events %}
+        <tr>
+          <td><a href="{{ url_for('events.detail', event_id=e.id) }}">{{ e.title }}</a></td>
+          <td>{{ e.starts_at|event_dt }}</td>
+          <td>{{ e.capacity - e.seats_available }} / {{ e.capacity }}</td>
+          <td>{{ e.price|money }}</td>
+          <td><a class="btn btn-sm" href="{{ url_for('events.edit', event_id=e.id) }}">Edit</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% else %}
+<section class="panel empty-note">
+  <h2>You haven't created an event yet.</h2>
+  <p>Add a date, venue, price and capacity, and it shows up on the events page.</p>
+  <div class="hero-actions"><a class="btn btn-fill" href="{{ url_for('events.new') }}">Create your first event</a></div>
+</section>
+{% endif %}
+{% endblock %}

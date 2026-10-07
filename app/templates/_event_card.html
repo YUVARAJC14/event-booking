@@ -1,0 +1,13 @@
+{% macro event_card(event) %}
+{% set booked = event.capacity - event.seats_available %}
+<a class="ticket event-card" href="{{ url_for('events.detail', event_id=event.id) }}">
+  <div class="ticket-main">
+    <span class="tag">{% if event.seats_available == 0 %}Sold out{% else %}{{ event.seats_available }} seat{{ '' if event.seats_available == 1 else 's' }} left{% endif %}</span>
+    <h3>{{ event.title }}</h3>
+    <p>{{ event.starts_at|event_dt }}</p>
+    <p>{{ event.venue }}</p>
+    <div class="seats" role="img" aria-label="{{ booked }} of {{ event.capacity }} seats booked"><span style="--w:{{ booked * 100 // event.capacity }}%"></span></div>
+  </div>
+  <div class="stub"><div class="barcode" aria-hidden="true"></div><small>{{ event.price|money }}</small></div>
+</a>
+{% endmacro %}

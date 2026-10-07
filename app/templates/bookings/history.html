@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}My bookings | seatly{% endblock %}
+{% block content %}
+{% macro rows(items, can_cancel) %}
+<div class="table-scroll">
+  <table>
+    <thead><tr><th>Event</th><th>When</th><th>Seats</th><th>Total</th><th>Code</th><th></th></tr></thead>
+    <tbody>
+      {% for b in items %}
+      <tr>
+        <td><a href="{{ url_for('bookings.detail', booking_id=b.id) }}">{{ b.event.title }}</a></td>
+        <td>{{ b.event.starts_at|event_dt }}</td>
+        <td>{{ b.quantity }}</td>
+        <td>{{ b.total_price|money }}</td>
+        <td class="mono">{{ b.booking_code }}</td>
+        <td>
+          {% if can_cancel %}
+          <form class="inline-form" method="post" action="{{ url_for('bookings.cancel', booking_id=b.id) }}" onsubmit="return confirm('Cancel this booking?')">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-sm btn-danger" type="submit">Cancel</button>
+          </form>
+          {% elif b.status == 'cancelled' %}
+          <span class="tag">Cancelled</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endmacro %}
+
+<section class="page-head">
+  <h1>My bookings</h1>
+  <a class="btn btn-fill" href="{{ url_for('events.list_events') }}">Browse events</a>
+</section>
+
+{% if upcoming or past %}
+<div class="stack">
+  {% if upcoming %}
+  <section class="panel">
+    <h2>Upcoming</h2>
+    {{ rows(upcoming, true) }}
+  </section>
+  {% endif %}
+  {% if past %}
+  <section class="panel">
+    <h2>Past and cancelled</h2>
+    {{ rows(past, false) }}
+  </section>
+  {% endif %}
+</div>
+{% else %}
+<section class="panel empty-note">
+  <h2>No bookings yet.</h2>
+  <p>When you book an event, your tickets show up here.</p>
+  <div class="hero-actions"><a class="btn btn-fill" href="{{ url_for('events.list_events') }}">Find an event</a></div>
+</section>
+{% endif %}
+{% endblock %}

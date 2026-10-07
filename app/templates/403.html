@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Not allowed | seatly{% endblock %}
+{% block content %}
+<section class="dash-head">
+  <h1>This page is for organizers.</h1>
+  <p>Your account can book events but not create them. Create an organizer account to host events.</p>
+  <div class="hero-actions"><a class="btn btn-fill" href="{{ url_for('events.list_events') }}">Browse events</a></div>
+</section>
+{% endblock %}

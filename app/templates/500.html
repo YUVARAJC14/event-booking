@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Something went wrong | seatly{% endblock %}
+{% block content %}
+<section class="dash-head">
+  <h1>Something went wrong on our side.</h1>
+  <p>Please try again in a moment.</p>
+  <div class="hero-actions"><a class="btn btn-fill" href="{{ url_for('main.index') }}">Go to home</a></div>
+</section>
+{% endblock %}

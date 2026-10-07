@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title }} | seatly{% endblock %}
+{% block content %}
+{% set booked = event.capacity - event.seats_available %}
+{% set is_owner = current_user.is_authenticated and current_user.id == event.organizer_id %}
+<section class="page-head">
+  <div>
+    <a class="back" href="{{ url_for('events.list_events') }}">All events</a>
+    <h1>{{ event.title }}</h1>
+  </div>
+</section>
+<section class="detail">
+  <div class="panel">
+    <p>{{ event.description or "The organizer hasn't added a description yet." }}</p>
+    <dl>
+      <dt>When</dt><dd>{{ event.starts_at|event_dt }}</dd>
+      <dt>Where</dt><dd>{{ event.venue }}</dd>
+      <dt>Price</dt><dd>{{ event.price|money }}{% if event.price != 0 %} per seat{% endif %}</dd>
+    </dl>
+  </div>
+  <aside class="panel sun">
+    <h3>{{ event.seats_available }} of {{ event.capacity }} seats left</h3>
+    <div class="seats" role="img" aria-label="{{ booked }} of {{ event.capacity }} seats booked"><span style="--w:{{ booked * 100 // event.capacity }}%"></span></div>
+
+    {% if is_owner %}
+      <p class="caption book-form">You are the organizer of this event.</p>
+      <div class="form-actions">
+        <a class="btn btn-sm" href="{{ url_for('events.edit', event_id=event.id) }}">Edit event</a>
+        <form class="inline-form" method="post" action="{{ url_for('events.delete', event_id=event.id) }}" onsubmit="return confirm('Delete this event?')">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-sm btn-danger" type="submit">Delete event</button>
+        </form>
+      </div>
+    {% elif is_past %}
+      <p class="book-form">This event has already started.</p>
+    {% elif event.seats_available == 0 %}
+      <p class="book-form">This event is sold out.</p>
+    {% elif not current_user.is_authenticated %}
+      <div class="form-actions"><a class="btn btn-fill" href="{{ url_for('auth.login', next=request.path) }}">Log in to book</a></div>
+    {% else %}
+      <form class="book-form" method="post" action="{{ url_for('bookings.create', event_id=event.id) }}" onsubmit="this.querySelector('button[type=submit]').disabled = true">
+        {{ booking_form.hidden_tag() }}
+        <div class="field">
+          {{ booking_form.quantity.label }}
+          {{ booking_form.quantity() }}
+        </div>
+        <div class="form-actions"><button class="btn btn-fill" type="submit">Book tickets</button></div>
+      </form>
+    {% endif %}
+  </aside>
+</section>
+{% endblock %}

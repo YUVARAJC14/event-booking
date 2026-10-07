@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}{{ heading }} | seatly{% endblock %}
+{% block content %}
+<section class="page-head"><h1>{{ heading }}</h1></section>
+<form class="panel form-panel" method="post" novalidate>
+  {{ form.hidden_tag() }}
+  {{ field(form.title) }}
+  {{ field(form.description) }}
+  {{ field(form.venue) }}
+  {{ field(form.starts_at) }}
+  <div class="row2">
+    {{ field(form.price) }}
+    {{ field(form.capacity) }}
+  </div>
+  <div class="form-actions">
+    {{ form.submit(class="btn btn-fill") }}
+    <a class="btn" href="{{ cancel_url }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

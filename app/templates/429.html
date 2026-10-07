@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Slow down | seatly{% endblock %}
+{% block content %}
+<section class="dash-head">
+  <h1>Slow down a little.</h1>
+  <p>You made a lot of requests in a short time. Wait a minute and try again.</p>
+  <div class="hero-actions"><a class="btn btn-fill" href="{{ url_for('main.index') }}">Go to home</a></div>
+</section>
+{% endblock %}

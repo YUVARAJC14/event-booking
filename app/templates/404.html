@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Not found | seatly{% endblock %}
+{% block content %}
+<section class="dash-head">
+  <h1>Page not found.</h1>
+  <p>The page you are looking for doesn't exist.</p>
+  <div class="hero-actions"><a class="btn btn-fill" href="{{ url_for('main.index') }}">Go to home</a></div>
+</section>
+{% endblock %}
